@@ -166,145 +166,72 @@ object List:
       case Cons(h, t) =>
         if check(sup, sub) then true else hasSubsequence(t, sub)
 
-enum Tree[+A]:
-  case Leaf(value: A)
-  case Branch(left: Tree[A], right: Tree[A])
+  object AnswersKey:
+    import fpinscala.datastructures.List.*
 
-  def size: Int = this match
-    case Leaf(_)      => 1
-    case Branch(l, r) => 1 + l.size + r.size
-
-  // ex 3.26
-  def depth: Int =
-    this match
-      case Leaf(value)         => 0
-      case Branch(left, right) => (left.depth + 1).max(right.depth + 1)
-
-  // ex 3.27
-  def map[B](f: A => B): Tree[B] = this match
-    case Leaf(value)         => Leaf(f(value))
-    case Branch(left, right) => Branch(left.map(f), right.map(f))
-
-  // ex 3.28
-  def foldRight[B](acc: B, f: (A, B) => B): B = this match
-    case Leaf(value)         => f(value, acc)
-    case Branch(left, right) => left.foldRight(right.foldRight(acc, f), f)
-  def foldLeft[B](acc: B, f: (A, B) => B): B = this match
-    case Leaf(value)         => f(value, acc)
-    case Branch(left, right) => right.foldLeft(left.foldLeft(acc, f), f)
-
-  // ex 3.28
-  def sizeViaFoldRight: Int = foldRight(0, (_, acc) => 1 + acc)
-
-  import AnswersKey.Tree.fold
-  def sizeViaFold: Int = this.fold((_) => 1, 1 + _ + _)
-  def depthViaFold: Int = this.fold((_) => 0, (l, r) => (l + 1).max(r + 1))
-  def mapViaFold[B](f: A => B): Tree[B] =
-    this.fold(a => Leaf(f(a)), Branch(_, _))
-
-object Tree:
-  def size[A](t: Tree[A]): Int = t match
-    case Leaf(_)      => 1
-    case Branch(l, r) => 1 + size(l) + size(r)
-
-  def firstPositive(t: Tree[Int]): Int = t match
-    case Leaf(i) => i
-    case Branch(l, r) =>
-      val lpos = firstPositive(l)
-      if lpos > 0 then lpos else firstPositive(r)
-
-  // the extension method and the regular method cannot share the same name
-  extension (t: Tree[Int])
-    def firstPositiveExt: Int = t match
-      case Leaf(i) => i
-      case Branch(l, r) =>
-        val lpos = l.firstPositiveExt
-        if lpos > 0 then lpos else r.firstPositiveExt
-
-  // ex 3.25
-  extension (t: Tree[Int])
-    def maximum: Int =
-      t match
-        case Leaf(value)         => value
-        case Branch(left, right) => left.maximum.max(right.maximum)
-
-  object FoldRight:
-    // ex 3.28
-    extension (t: Tree[Int])
-      def maximum: Int = t.foldRight(Int.MinValue, (n, acc) => n.max(acc))
-
-object AnswersKey:
-  import fpinscala.datastructures.List.*
-
-  export List.*
-  object List:
     @annotation.tailrec
     def dropWhile[A](as: List[A], f: A => Boolean): List[A] =
       as match
         case Cons(h, t) if f(h) => dropWhile(t, f)
         case _                  => as
 
-  def foldRightViaFoldLeft[A, B](as: List[A], acc: B, f: (A, B) => B) =
-    foldLeft(as, (b: B) => b, (g, a) => b => g(f(a, b)))(acc)
+    def foldRightViaFoldLeft[A, B](as: List[A], acc: B, f: (A, B) => B) =
+      foldLeft(as, (b: B) => b, (g, a) => b => g(f(a, b)))(acc)
 
-  def foldLeftViaFoldRight[A, B](as: List[A], acc: B, f: (A, B) => B) =
-    foldRight(as, (b: B) => b, (a, g) => b => g(f(a, b)))(acc)
+    def foldLeftViaFoldRight[A, B](as: List[A], acc: B, f: (A, B) => B) =
+      foldRight(as, (b: B) => b, (a, g) => b => g(f(a, b)))(acc)
 
-  // ex 3.16
-  def incrementEach(l: List[Int]): List[Int] =
-    foldRight(l, Nil: List[Int], (i, acc) => Cons(i + 1, acc))
+    // ex 3.16
+    def incrementEach(l: List[Int]): List[Int] =
+      foldRight(l, Nil: List[Int], (i, acc) => Cons(i + 1, acc))
 
-  // ex 3.17
-  def doubleToString(l: List[Double]): List[String] =
-    foldRight(l, Nil: List[String], (d, acc) => Cons(d.toString, acc))
+    // ex 3.17
+    def doubleToString(l: List[Double]): List[String] =
+      foldRight(l, Nil: List[String], (d, acc) => Cons(d.toString, acc))
 
-  // ex 3.18
-  def map[A, B](as: List[A], f: A => B): List[B] =
-    foldRight(as, Nil: List[B], (a, acc) => Cons(f(a), acc))
+    // ex 3.18
+    def map[A, B](as: List[A], f: A => B): List[B] =
+      foldRight(as, Nil: List[B], (a, acc) => Cons(f(a), acc))
 
-  // ex 3.19
-  def filter[A](as: List[A], f: A => Boolean): List[A] =
-    foldRight(as, Nil: List[A], (a, acc) => if f(a) then Cons(a, acc) else acc)
+    // ex 3.19
+    def filter[A](as: List[A], f: A => Boolean): List[A] =
+      foldRight(
+        as,
+        Nil: List[A],
+        (a, acc) => if f(a) then Cons(a, acc) else acc
+      )
 
-  // ex 3.23
-  def zipWith[A, B, C](a: List[A], b: List[B], f: (A, B) => C): List[C] =
-    (a, b) match
-      case (Nil, _)                     => Nil
-      case (_, Nil)                     => Nil
-      case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2, f))
-
-  // ex 3.23
-  def zipWithStackSafe[A, B, C](
-      a: List[A],
-      b: List[B],
-      f: (A, B) => C
-  ): List[C] =
-    @annotation.tailrec
-    def loop(a: List[A], b: List[B], acc: List[C]): List[C] =
+    // ex 3.23
+    def zipWith[A, B, C](a: List[A], b: List[B], f: (A, B) => C): List[C] =
       (a, b) match
         case (Nil, _)                     => Nil
         case (_, Nil)                     => Nil
-        case (Cons(h1, t1), Cons(h2, t2)) => loop(t1, t2, Cons(f(h1, h2), acc))
-    reverse(loop(a, b, Nil))
+        case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2, f))
 
-  // ex 3.24
-  @annotation.tailrec
-  def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l, prefix) match
-    case (_, Nil)                              => true
-    case (Cons(h, t), Cons(h2, t2)) if h == h2 => startsWith(t, t2)
-    case _                                     => false
+    // ex 3.23
+    def zipWithStackSafe[A, B, C](
+        a: List[A],
+        b: List[B],
+        f: (A, B) => C
+    ): List[C] =
+      @annotation.tailrec
+      def loop(a: List[A], b: List[B], acc: List[C]): List[C] =
+        (a, b) match
+          case (Nil, _) => Nil
+          case (_, Nil) => Nil
+          case (Cons(h1, t1), Cons(h2, t2)) =>
+            loop(t1, t2, Cons(f(h1, h2), acc))
+      reverse(loop(a, b, Nil))
 
-  @annotation.tailrec
-  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match
-    case Nil                       => sub == Nil
-    case _ if startsWith(sup, sub) => true
-    case Cons(h, t)                => hasSubsequence(t, sub)
+    // ex 3.24
+    @annotation.tailrec
+    def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l, prefix) match
+      case (_, Nil)                              => true
+      case (Cons(h, t), Cons(h2, t2)) if h == h2 => startsWith(t, t2)
+      case _                                     => false
 
-  import fpinscala.datastructures.Tree.*
-  object Tree:
-    extension [A](t: Tree[A])
-      def fold[B](f: A => B, g: (B, B) => B): B = t match
-        case Leaf(a)      => f(a)
-        case Branch(l, r) => g(l.fold(f, g), r.fold(f, g))
-
-    extension (t: Tree[Int]) def maximum: Int = t.fold(n => n, _ max _)
+    @annotation.tailrec
+    def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match
+      case Nil                       => sub == Nil
+      case _ if startsWith(sup, sub) => true
+      case Cons(h, t)                => hasSubsequence(t, sub)
