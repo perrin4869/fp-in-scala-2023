@@ -17,4 +17,5 @@ jobs:
       - name: Scala Steward
         uses: scala-steward-org/scala-steward-action@v2
         with:
+          # this is needed for workflows to be dispatched for PRs created via steward
           github-token: ${{ secrets.STEWARD_PAT }}
