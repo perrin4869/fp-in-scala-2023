@@ -1,39 +1,37 @@
 package il.co.dotcore.julian.fpinscala2023.ch06
 
 class StateSuite extends munit.FunSuite {
-  import fpinscala.state.*
-  import RNG.*
+  import fpinscala.state.RNG
+  import fpinscala.state.SimpleRNG
+  import fpinscala.state.State
 
-  // ex01
-  test("nonNegativeInt") {
-    assert(SimpleRNG(10878).nextInt._1 == -109668761)
-    assert(nonNegativeInt(SimpleRNG(10878))._1 == 109668760)
+  // ex10
+  test("unit") {
+    val (n, _) = State.unit[RNG, Int](10).run(SimpleRNG(10878))
+    assert(n == 10)
   }
 
-  // ex02
-  test("double") {
-    val (d, _) = double(SimpleRNG(10878))
-    assert(d == 0.0510684959590435)
+  // ex10
+  test("map") {
+    val (n, _) = State.unit[RNG, Int](10).map(_ + 1).run(SimpleRNG(10878))
+    assert(n == 11)
   }
 
-  // ex03
-  test("intDouble, doubleInt, double3") {
-    val r = SimpleRNG(10878)
-    val ((n, d), r1) = intDouble(r)
-    assert(n == -109668761)
-    assert(d == 0.9370457120239735)
-    val ((d2, n2), r2) = doubleInt(r1)
-    assert(d2 == 0.5246234084479511)
-    assert(n2 == -559258828)
-    val ((d3, d4, d5), _) = double3(r2)
-    assert(d3 == 0.6614972185343504)
-    assert(d4 == 0.4501727558672428)
-    assert(d5 == 0.9000771911814809)
+  // ex10
+  test("map2") {
+    val (n, _) = State.unit(1).map2(State.unit(3))(_ + _).run(SimpleRNG(10))
+    assert(n == 4)
   }
 
-  // ex04
-  test("ints") {
-    val (l, _) = ints(5)(SimpleRNG(10))
-    assert(l == List(3847489, 1334288366, 1486862010, 711662464, -1453296530))
+  // ex10
+  test("flatMap") {
+    val (n, _) = State.unit(1).flatMap(_ => State.unit(2)).run(SimpleRNG(10))
+    assert(n == 2)
+  }
+
+  // ex10
+  test("sequence") {
+    val (l, _) = State.sequence(List.fill(5)(State.unit(1))).run(SimpleRNG(10))
+    assert(l == List(1, 1, 1, 1, 1))
   }
 }
