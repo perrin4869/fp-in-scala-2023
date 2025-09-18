@@ -35,6 +35,16 @@ object State:
   def sequence[S, A](rs: List[State[S, A]]): State[S, List[A]] =
     rs.foldRight(unit(Nil))((r, r0) => r.map2(r0)(_ :: _))
 
+  def get[S]: State[S, S] = s => (s, s)
+
+  def set[S](s: S): State[S, Unit] = _ => ((), s)
+
+  def modify[S](f: S => S): State[S, Unit] =
+    for
+      s <- get
+      _ <- set(f(s))
+    yield ()
+
   object AnswersKey:
     extension [S, A](underlying: State[S, A])
       def map2[B, C](sb: State[S, B])(f: (A, B) => C): State[S, C] =
