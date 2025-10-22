@@ -18,4 +18,5 @@ jobs:
         uses: scala-steward-org/scala-steward-action@v2
         with:
           # this is needed for workflows to be dispatched for PRs created via steward
+          # https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow?utm_source=chatgpt.com#triggering-a-workflow-from-a-workflow
           github-token: ${{ secrets.STEWARD_PAT }}
