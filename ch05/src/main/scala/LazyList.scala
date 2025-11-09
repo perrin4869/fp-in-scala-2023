@@ -116,7 +116,7 @@ enum LazyList[+A]:
       case Cons(h, t) => Some(cons(h(), t()), t())
       case _          => None
     )
-    .append(LazyList(empty))
+      .append(LazyList(empty))
 
   def hasSubsequence[B >: A](l: LazyList[B]): Boolean =
     tails.exists(_.startsWith(l))
@@ -151,7 +151,7 @@ enum LazyList[+A]:
     // ex13
     def zipAll[B](that: LazyList[B]): LazyList[(Option[A], Option[B])] =
       unfold((LazyList.this), (that)):
-        case (Empty, Empty) => None
+        case (Empty, Empty)        => None
         case (Cons(h1, t1), Empty) =>
           Some((Some(h1()) -> None) -> (t1() -> Empty))
         case (Empty, Cons(h2, t2)) =>
