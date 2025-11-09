@@ -162,7 +162,7 @@ object List:
         case _                            => false
 
     sup match
-      case Nil => false
+      case Nil        => false
       case Cons(h, t) =>
         if check(sup, sub) then true else hasSubsequence(t, sub)
 
@@ -217,8 +217,8 @@ object List:
       @annotation.tailrec
       def loop(a: List[A], b: List[B], acc: List[C]): List[C] =
         (a, b) match
-          case (Nil, _) => Nil
-          case (_, Nil) => Nil
+          case (Nil, _)                     => Nil
+          case (_, Nil)                     => Nil
           case (Cons(h1, t1), Cons(h2, t2)) =>
             loop(t1, t2, Cons(f(h1, h2), acc))
       reverse(loop(a, b, Nil))
