@@ -42,7 +42,7 @@ object Tree:
     case Branch(l, r) => 1 + size(l) + size(r)
 
   def firstPositive(t: Tree[Int]): Int = t match
-    case Leaf(i) => i
+    case Leaf(i)      => i
     case Branch(l, r) =>
       val lpos = firstPositive(l)
       if lpos > 0 then lpos else firstPositive(r)
@@ -50,7 +50,7 @@ object Tree:
   // the extension method and the regular method cannot share the same name
   extension (t: Tree[Int])
     def firstPositiveExt: Int = t match
-      case Leaf(i) => i
+      case Leaf(i)      => i
       case Branch(l, r) =>
         val lpos = l.firstPositiveExt
         if lpos > 0 then lpos else r.firstPositiveExt

@@ -35,9 +35,9 @@ object Machine:
     val update = (i: Input) =>
       (s: Machine) =>
         (i, s) match
-          case (_, Machine(_, 0, _))              => s
-          case (Input.Coin, Machine(false, _, _)) => s
-          case (Input.Turn, Machine(true, _, _))  => s
+          case (_, Machine(_, 0, _))                    => s
+          case (Input.Coin, Machine(false, _, _))       => s
+          case (Input.Turn, Machine(true, _, _))        => s
           case (Input.Coin, Machine(true, candy, coin)) =>
             Machine(false, candy, coin + 1)
           case (Input.Turn, Machine(false, candy, coin)) =>
