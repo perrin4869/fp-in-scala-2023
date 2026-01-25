@@ -1,4 +1,4 @@
-//> using scala 3.7.4
+//> using scala 3.8.1
 //> using jvm 25
 // uses Thread.sleep(d: Duration) which is available on jvm >= 19
 
