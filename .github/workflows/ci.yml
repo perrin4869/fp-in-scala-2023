@@ -21,4 +21,4 @@ jobs:
             echo "  scala-cli fmt ."
             exit 1
           )
-      - run: scala-cli test .
+      - run: scala-cli test --server=false .
