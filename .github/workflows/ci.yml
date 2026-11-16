@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: coursier/cache-action@v9.0
-      - uses: VirtusLab/scala-cli-setup@v1.18
+      - uses: VirtusLab/scala-cli-setup@v1.19
       - name: Scalafmt check
         run: |
           scala-cli fmt --check . || (
